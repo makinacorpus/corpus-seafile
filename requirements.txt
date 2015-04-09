@@ -2,6 +2,7 @@
 -f http://cairographics.org/releases/
 -f http://dist.plone.org/thirdparty/
 --allow-unverified cherrypy
+--allow-unverified Djblets
 --allow-unverified genshi
 --allow-unverified mongodb
 Jinja2 == 2.7.2
@@ -20,4 +21,11 @@ ipython
 gunicorn
 django-extensions
 django-finalware
+##############################
+# MERGE WITH DATA_DIR/current/seahub/requirements.txt
 MySQL-python==1.2.5
+chardet
+six
+Django==1.5.8
+Djblets==0.6.14
+python-ldap

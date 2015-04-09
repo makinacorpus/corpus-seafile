@@ -20,21 +20,54 @@ makina-projects.projectname:
     server_aliases: []
     seafile_data: "{data_root}/seafile_data"
     seahub_data: "{data_root}/seahub_data"
+    seafile_mysql_host: 127.0.0.1
+    seafile_mysql_port: 3306
+    seafile_mysql_db: seafile
+    seafile_mysql_user: seafile
+    seafile_mysql_pw: seafile
+    ccnet_mysql_host: 127.0.0.1
+    ccnet_mysql_port: 3306
+    ccnet_mysql_db: ccnet
+    ccnet_mysql_user: ccnet
+    ccnet_mysql_pw: ccnet
+    ccnet_conf:
+      General:
+        SERVICE_URL: "https://{domain}:443"
+      Network:
+        port: 10002
+      Database:
+        ENGINE: 'mysql'
+        HOST: "{ccnet_mysql_host}"
+        PORT: "{ccnet_mysql_port}"
+        USER: "{ccnet_mysql_user}"
+        PASSWD: "{ccnet_mysql_pw}"
+        DB: "{ccnet_mysql_db}"
+        CONNECTION_CHARSET: 'utf8'
     seafile_conf:
       network:
         port: 12001
       fileserver:
         port: 8082
     seafile_ini:
+      database:
+        type: mysql
+        host: "{seafile_mysql_host}"
+        port: "{seafile_mysql_port}"
+        user: "{seafile_mysql_user}"
+        password: "{seafile_mysql_pw}"
+        db_name: "{seafile_mysql_db}"
+        connection_charset: 'utf8'
+    seafdav_conf:
       WEBDAV:
         enabled: "false"
         port: 8080
         fastcgi: "false"
-        share_name: / 
+        share_name: /
     PROJECT: seafile
     version: "4.1.1"
+    force_ssl: true
     pointer: "{data_root}/current"
-    app_root: "{data_root}/seafile"
+    app_root: "{pointer}/seahub"
     app_download_dir: "{app_root}"
     app_url_type: file
     app_url_tar_opts: "xzvf"
@@ -61,24 +94,26 @@ makina-projects.projectname:
           password: {{salt['mc_utils.generate_stored_password'](
                              'corpus-django_web_admin'+i)}}
       {%endfor %}
+    DJANGO_SETTINGS_MODULE: "seahub.dsm"
+    SEAFILE_DJANGO_SETTINGS_MODULE: "seahub.settings"
+    compile_messages: false
     django_settings:
       # order is important
+      FILE_SERVER_ROOT: "https://{domain}/seafhttp"
+      SITE_BASE: 'https://{domain}'
+      SITE_NAME: 'Seafile'
       ADMINS: "placeholder (totally computed)"
       SITE_ID: 1
       DATABASES:
         default:
-          # SQLITE
-          ENGINE: 'django.db.backends.sqlite3'
-          NAME: "{data_root}/{PROJECT}.sqlite"
-          # GEODJANGO BACKEND !
-          #    ENGINE: 'django.contrib.gis.db.backends.postgis'
-          # Classical pg backend
-          # ENGINE: 'django.db.backends.postgresql_psycopg2'
-          # USER: '{name}'
-          # PORT: 5432
-          # HOST: '127.0.0.1'
-          # NAME: 'db'
-          # PASSWORD: '{name}secret'
+          ENGINE: 'django.db.backends.mysql'
+          USER: '{name}'
+          PORT: 3306
+          HOST: '127.0.0.1'
+          NAME: 'seahub'
+          PASSWORD: '{name}secret'
+          OPTIONS:
+            init_command: 'SET storage_engine=INNODB'
       DEFAULT_FROM_EMAIL: '{adminmail}'
       SERVER_EMAIL: 'root@{fqdn}'
       MEDIA_ROOT: '{media}'
@@ -100,8 +135,8 @@ makina-projects.projectname:
       USE_X_FORWARDED_HOST: True
       CACHES:
         default:
-          BACKEND': 'django.core.cache.backends.memcached.MemcachedCache'
-          LOCATION': '127.0.0.1:11211'
+          BACKEND: 'django.core.cache.backends.memcached.MemcachedCache'
+          LOCATION: '127.0.0.1:11211'
       USER_MODULE: django.contrib.auth.models
       USER_CLASS: User
       SECRET_KEY: "{{salt['mc_utils.generate_stored_password'](
@@ -131,7 +166,7 @@ makina-projects.projectname:
           django:
              handlers: ['console', 'mail_admins']
              level: 'ERROR'
-             propagate': True
+             propagate: True
       LANGUAGES:
        - "('fr', _('French'))"
        - "('en', _('English'))"
