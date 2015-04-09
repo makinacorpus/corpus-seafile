@@ -16,16 +16,134 @@
 # but lists are overidden
 makina-projects.projectname:
   data:
-    opt: value
-    password: SecretToBeChangedInsidePillar
-  env_defaults:
-    dev:
-      opt: value2
-  os_defaults:
-    Ubuntu:
-# os  filter
-      opt: value1
-    Debian:
-# os familly filter
-      opt1: value11
+    domain: "{fqdn}"
+    server_aliases: []
+    seafile_data: "{data_root}/seafile_data"
+    seahub_data: "{data_root}/seahub_data"
+    seafile_conf:
+      network:
+        port: 12001
+      fileserver:
+        port: 8082
+    seafile_ini:
+      WEBDAV:
+        enabled: "false"
+        port: 8080
+        fastcgi: "false"
+        share_name: / 
+    PROJECT: seafile
+    version: "4.1.1"
+    pointer: "{data_root}/current"
+    app_root: "{data_root}/seafile"
+    app_download_dir: "{app_root}"
+    app_url_type: file
+    app_url_tar_opts: "xzvf"
+    app_url_archive_format: tar
+    app_url_hash: "md5=de64f5f52ae4183d912d1584eac8a9b3"
+    cur_ver_dir: "{data_root}/server_{version}/seafile-server-{version}"
+    app_archive_test_exists: "test ! -e {cur_ver_dir}/setup-seafile.sh"
+    app_url: "https://bitbucket.org/haiwen/seafile/downloads/seafile-server_{version}_{arch}.tar.gz"
+    arch: "x86-64"
+    htaccess: "/etc/{name}.webaccess"
+    py: "{py_root}/bin/python"
+    py_root: "{project_root}/venv"
+    requirements: "{project_root}/requirements.txt"
+    nginx_loglevel: "crit"
+    nginx_upstreams: salt://makina-projects/{name}/files/nginx.upstreams.conf
+    nginx_vhost: salt://makina-projects/{name}/files/nginx.content.conf
+    static: "{data_root}/static"
+    media: "{pointer}/seahub/media"
+    media_source: "{media}"
+    admins:
+      {% for i in ['sysadmin'] %}
+      - {{i}}:
+          mail: "{{i}}+{name}@{fqdn}"
+          password: {{salt['mc_utils.generate_stored_password'](
+                             'corpus-django_web_admin'+i)}}
+      {%endfor %}
+    django_settings:
+      # order is important
+      ADMINS: "placeholder (totally computed)"
+      SITE_ID: 1
+      DATABASES:
+        default:
+          # SQLITE
+          ENGINE: 'django.db.backends.sqlite3'
+          NAME: "{data_root}/{PROJECT}.sqlite"
+          # GEODJANGO BACKEND !
+          #    ENGINE: 'django.contrib.gis.db.backends.postgis'
+          # Classical pg backend
+          # ENGINE: 'django.db.backends.postgresql_psycopg2'
+          # USER: '{name}'
+          # PORT: 5432
+          # HOST: '127.0.0.1'
+          # NAME: 'db'
+          # PASSWORD: '{name}secret'
+      DEFAULT_FROM_EMAIL: '{adminmail}'
+      SERVER_EMAIL: 'root@{fqdn}'
+      MEDIA_ROOT: '{media}'
+      STATIC_ROOT: '{static}'
+      LANGUAGE_CODE: fr-fr
+      DATE_FORMAT: 'iso-8601'
+      ALLOWED_HOSTS:
+        - localhost
+        - 127.0.0.1
+        - "{domain}"
+        - "{fqdn}"
+        - "10.5.0.1"
+      CORS_ORIGIN_ALLOW_ALL: True
+      # Internationalization
+      # https://docs.djangoproject.com/en/1.6/topics/i18n/
+      TIME_ZONE: 'Europe/Paris'
+      DEBUG: False
+      TEMPLATE_DEBUG: False
+      USE_X_FORWARDED_HOST: True
+      CACHES:
+        default:
+          BACKEND': 'django.core.cache.backends.memcached.MemcachedCache'
+          LOCATION': '127.0.0.1:11211'
+      USER_MODULE: django.contrib.auth.models
+      USER_CLASS: User
+      SECRET_KEY: "{{salt['mc_utils.generate_stored_password'](
+                             'corpus-django_web_secret_key', 64)}}"
+      LOGGING:
+        version: 1
+        disable_existing_loggers: False
+        filters:
+          require_debug_false:
+            '()': django.utils.log.RequireDebugFalse
+        handlers:
+          mail_admins:
+            level: 'ERROR'
+            class: django.utils.log.AdminEmailHandler
+          console:
+            level: 'DEBUG'
+            class: 'logging.StreamHandler'
+        loggers:
+          '':
+            handlers: ['console']
+            level: 'DEBUG'
+            propagate: False
+          django.request:
+             handlers: ['console', 'mail_admins']
+             level: 'ERROR'
+             propagate: True
+          django:
+             handlers: ['console', 'mail_admins']
+             level: 'ERROR'
+             propagate': True
+      LANGUAGES:
+       - "('fr', _('French'))"
+       - "('en', _('English'))"
+       - "('it', _('Italia'))"
+      #ADDITIONAL_TEMPLATE_DIRS:
+      #  - '{project_root}/calanques'
+      # add custom extra_settings which will be processed at end only
+      #extra_django_settings:
+      #  FOO: bar
+      #  BAR: true
+      # settings rendered as is (not via the macro
+      #extra_settings:
+      #  FOO: "'bar'"
+      #  BAR: "True"
 # vim:set ft=sls:
