@@ -11,15 +11,25 @@
 # the current projectname
 # you can also merge parts of this file
 # with the relevant pillar
-#
-# think that dicts are updated/merged with default
-# but lists are overidden
+
 makina-projects.projectname:
   data:
-    domain: "{fqdn}"
-    server_aliases: []
-    seafile_data: "{data_root}/seafile_data"
-    seahub_data: "{data_root}/seahub_data"
+    version: "4.1.1"
+    searoot: "{data_root}/root"
+    pointer: "{searoot}/seafile-server-latest"
+    app_root: "{pointer}/seahub"
+    app_download_dir: "{app_root}"
+    app_url_type: file
+    app_url_tar_opts: "xzvf"
+    app_url_archive_format: tar
+    app_url_hash: "md5=de64f5f52ae4183d912d1584eac8a9b3"
+    app_download_root: "{data_root}/server_{version}"
+    cur_ver_dir: "{app_download_root}/seafile-server-{version}"
+    app_archive_test_exists: "test ! -e {cur_ver_dir}/setup-seafile.sh"
+    app_url: "https://bitbucket.org/haiwen/seafile/downloads/seafile-server_{version}_{arch}.tar.gz"
+    arch: "x86-64"
+    seafile_data: "{searoot}/seafile-data"
+    seahub_data: "{searoot}/seahub-data"
     seafile_mysql_host: 127.0.0.1
     seafile_mysql_port: 3306
     seafile_mysql_db: seafile
@@ -33,6 +43,7 @@ makina-projects.projectname:
     ccnet_conf:
       General:
         SERVICE_URL: "https://{domain}:443"
+        name: "{fqdn}"
       Network:
         port: 10002
       Database:
@@ -63,30 +74,61 @@ makina-projects.projectname:
         port: 8080
         fastcgi: "false"
         share_name: /
+    # we use later another django site module
+    # which must live out of ./seahub as it import
+    # modules that needs to be first added
+    # to sys.path
+    # and some env var should be setted first
+    SEAFILE_DJANGO_SETTINGS_MODULE: "seahub.settings"
+    #
+    #
+    # corpus-django common settings
     PROJECT: seafile
-    version: "4.1.1"
-    force_ssl: true
-    pointer: "{data_root}/current"
-    app_root: "{pointer}/seahub"
-    app_download_dir: "{app_root}"
-    app_url_type: file
-    app_url_tar_opts: "xzvf"
-    app_url_archive_format: tar
-    app_url_hash: "md5=de64f5f52ae4183d912d1584eac8a9b3"
-    cur_ver_dir: "{data_root}/server_{version}/seafile-server-{version}"
-    app_archive_test_exists: "test ! -e {cur_ver_dir}/setup-seafile.sh"
-    app_url: "https://bitbucket.org/haiwen/seafile/downloads/seafile-server_{version}_{arch}.tar.gz"
-    arch: "x86-64"
+    # leave it out of seahub as seahub/__init__ is not
+    # importable at first, there is magic
+    configs:
+      {% for i in ['settings_local.py',
+                   'localsettings.py',
+                   'local_settings.py'] %}
+      "{{i}}":
+        source: "salt://makina-projects/{name}/files/config.py"
+        #target: "{app_root}/{PROJECT}/{{i}}"
+        target: "{pointer}/seahub/seahub_settings.py"
+        mode: 640
+      {% endfor %}
+      seahub/seahub_dsm.py:
+        target: "{pointer}/seahub/seahub_dsm.py"
+      ccnet/seafile.ini:
+        target: "{pointer}/ccnet/seafile.ini"
+      ccnet/ccnet.conf:
+        target: "{pointer}/ccnet/ccnet.conf"
+      conf/seafdav.conf:
+        target: "{pointer}/conf/seafdav.conf"
+      seafile.conf:
+        target: "{seafile_data}/seafile.conf"
     htaccess: "/etc/{name}.webaccess"
     py: "{py_root}/bin/python"
     py_root: "{project_root}/venv"
+    media_source: "{media}"
+    domain: "{fqdn}"
     requirements: "{project_root}/requirements.txt"
+    server_aliases: []
+    force_ssl: true
+    #disabled_urls []
+    #ldap_url: "ldap://ldap.net/dc=m,dc=com?uid?sub?(objectClass=person)"
+    #admin_url: /admin
+    #admin_allowed_ips :[]
+    DJANGO_SETTINGS_MODULE: "seahub_dsm"
+    WSGI: "{PROJECT}.wsgi:application"
     nginx_loglevel: "crit"
     nginx_upstreams: salt://makina-projects/{name}/files/nginx.upstreams.conf
     nginx_vhost: salt://makina-projects/{name}/files/nginx.content.conf
-    static: "{data_root}/static"
-    media: "{pointer}/seahub/media"
-    media_source: "{media}"
+    adminmail: "root@{domain}"
+    #ftp_ip: "x.x.x.x"
+    #ftp_port_range: "22300 22400"
+    #ftp_users:
+    #  - ftpuser: {'password': 'xxx', "home": "{data_root}/foo"}
+    create_admins: true 
     admins:
       {% for i in ['sysadmin'] %}
       - {{i}}:
@@ -94,9 +136,22 @@ makina-projects.projectname:
           password: {{salt['mc_utils.generate_stored_password'](
                              'corpus-django_web_admin'+i)}}
       {%endfor %}
-    DJANGO_SETTINGS_MODULE: "seahub.dsm"
-    SEAFILE_DJANGO_SETTINGS_MODULE: "seahub.settings"
+    static: "{data_root}/static"
+    media: "{app_root}/seahub/media"
+    host: localhost
+    port: 8180
+    workers: 10
+    worker_class: sync
+    worker_timeout: 9000
     compile_messages: false
+    collect_static: false
+    do_syncdb: true
+    do_migrate: false
+    do_syncdb_only_first_time: true
+    # http_users:
+    #   - root: foo
+    # extra django settings to add
+    # to the file
     django_settings:
       # order is important
       FILE_SERVER_ROOT: "https://{domain}/seafhttp"
@@ -110,7 +165,7 @@ makina-projects.projectname:
           USER: '{name}'
           PORT: 3306
           HOST: '127.0.0.1'
-          NAME: 'seahub'
+          NAME: 'db'
           PASSWORD: '{name}secret'
           OPTIONS:
             init_command: 'SET storage_engine=INNODB'
@@ -181,4 +236,8 @@ makina-projects.projectname:
       #extra_settings:
       #  FOO: "'bar'"
       #  BAR: "True"
+  env_defaults:
+    dev:
+      django_settings:
+        DEBUG: True
 # vim:set ft=sls:

@@ -1,4 +1,6 @@
 *pyc
+/develop_eggs
+/corpus-django
 /cache
 /venv/
 /develop_eggs/

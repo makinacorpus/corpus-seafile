@@ -9,8 +9,17 @@
 {% endmacro %}
 
 include:
-  - makina-projects.{{cfg.name}}.task_layout
+  - makina-projects.{{cfg.name}}.include.configs
+  - makina-projects.{{cfg.name}}.include.seafile
 
+# backward compatible ID !
+{{cfg.name}}-config:
+  file.exists:
+    - name: "{{data.configs['localsettings.py']['target']}}"
+    - watch:
+      - mc_proxy: "{{cfg.name}}-configs-post"
+
+{% if data.get('collect_static', True) %}
 static-{{cfg.name}}:
   cmd.run:
     - name: {{data.py}} manage.py collectstatic --noinput
@@ -18,9 +27,10 @@ static-{{cfg.name}}:
     - cwd: {{data.app_root}}
     - user: {{cfg.user}}
     - watch:
-      - mc_proxy: {{cfg.name}}-config-proxy
+      - mc_proxy: {{cfg.name}}-configs-post
+{% endif %}
 
-{% if data.compile_messages %}
+{% if data.get('compile_messages', True) %}
 msg-{{cfg.name}}:
   cmd.run:
     - name: {{data.py}} manage.py compilemessages
@@ -28,20 +38,45 @@ msg-{{cfg.name}}:
     - cwd: {{data.app_root}}
     - user: {{cfg.user}}
     - watch:
-      - mc_proxy: {{cfg.name}}-config-proxy
+      - mc_proxy: {{cfg.name}}-configs-post
 {% endif %}
 
 syncdb-{{cfg.name}}:
   cmd.run:
-    #- name: {{data.py}} manage.py syncdb --noinput
-    - name: {{data.py}} manage.py syncdb --noinput && {{data.py}} manage.py migrate --noinput
+    - name: |
+            set -e
+            {% if data.get('do_syncdb', True) %}
+            {{data.py}} manage.py syncdb --noinput
+            {% endif %}
+            {% if data.get('do_migrate', True) %}
+            {{data.py}} manage.py migrate --noinput
+            {% endif %}
+            {% if data.get('do_syncdb_only_first_time', False) %}
+            touch "{{cfg.data_root}}/installed"
+            {% endif %}
+    {% if data.get('do_syncdb_only_first_time', False) %}
+    - onlyif: test ! -e "{{cfg.data_root}}/installed"
+    {% endif %}
     {{set_env()}}
     - cwd: {{data.app_root}}
     - user: {{cfg.user}}
     - use_vt: true
     - output_loglevel: info
     - watch:
-      - mc_proxy: {{cfg.name}}-config-proxy
+      - mc_proxy: {{cfg.name}}-configs-post
+
+{% if data.media_source != data.media %}
+media-{{cfg.name}}:
+  cmd.run:
+    - name: rsync -av {{data.media_source}}/ {{data.media}}/
+    - onlyif: test -e {{data.media_source}}
+    - cwd: {{data.app_root}}
+    - user: {{cfg.user}}
+    - use_vt: true
+    - output_loglevel: info
+    - watch:
+      - file: {{cfg.name}}-config
+{% endif %}
 
 {% if data.get('create_admins', True) %}
 {% for dadmins in data.admins %}
@@ -69,7 +104,7 @@ user-{{cfg.name}}-{{admin}}:
     - cwd: {{data.app_root}}
     - user: {{cfg.user}}
     - watch:
-      - mc_proxy: {{cfg.name}}-config-proxy
+      - mc_proxy: {{cfg.name}}-configs-post
       - cmd: syncdb-{{cfg.name}}
   cmd.run:
     - name: {{data.py}} manage.py createsuperuser --username="{{admin}}" --email="{{udata.mail}}" --noinput
@@ -78,7 +113,7 @@ user-{{cfg.name}}-{{admin}}:
     - cwd: {{data.app_root}}
     - user: {{cfg.user}}
     - watch:
-      - mc_proxy: {{cfg.name}}-config-proxy
+      - mc_proxy: {{cfg.name}}-configs-post
       - cmd: syncdb-{{cfg.name}}
       - file: user-{{cfg.name}}-{{admin}}
 
@@ -105,7 +140,7 @@ superuser-{{cfg.name}}-{{admin}}:
     - group: {{cfg.group}}
     - name: "{{f}}"
     - watch:
-      - mc_proxy: {{cfg.name}}-config-proxy
+      - mc_proxy: {{cfg.name}}-configs-post
       - cmd: syncdb-{{cfg.name}}
   cmd.run:
     {{set_env()}}

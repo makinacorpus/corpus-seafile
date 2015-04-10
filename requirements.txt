@@ -14,18 +14,36 @@ SQLAlchemy == 0.9.4
 Pillow
 djangorestframework
 django-cors-headers
-python-dateutil
 pycurl
 requests
 ipython
 gunicorn
 django-extensions
 django-finalware
-##############################
-# MERGE WITH DATA_DIR/current/seahub/requirements.txt
-MySQL-python==1.2.5
+
+
+
+###################################################
+# MERGE WITH DATA_DIR/root/seahub/requirements.txt
+###################################################
+
+lockfile
+pyes
+ordereddict
+python-dateutil
+flup
+python_daemon==1.5.5
 chardet
 six
 Django==1.5.8
-Djblets==0.6.14
+#Djblets==0.6.14
+
+##############
+# ADDITIONNAL
+##############
+
+MySQL-python==1.2.5
+python-memcached
 python-ldap
+
+-e git+https://github.com/makinacorpus/djblets.git@release-0.6.x#egg=Djblets

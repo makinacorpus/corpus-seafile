@@ -2,8 +2,9 @@
 {% set data = cfg.data %}
 {% set scfg = salt['mc_utils.json_dump'](cfg) %}
 {% set is_pg = 'postg' in data.django_settings.DATABASES.default.ENGINE %}
-{% if is_pg %}
 include:
+  - makina-states.services.cache.memcached
+{% if is_pg %}
   - makina-states.services.gis.ubuntugis
   - makina-states.services.db.postgresql.client
 {% endif %}
@@ -116,6 +117,7 @@ prepreqs-{{cfg.name}}:
       - {{cfg.data.static}}
       - {{cfg.data.seafile_data}}
       - {{cfg.data.seahub_data}}
+      - {{cfg.data.searoot}}
 
 {% for i in ['cache'] %}
 {{cfg.name}}-l-dirs-{{i}}:
