@@ -16,7 +16,7 @@ makina-projects.projectname:
   data:
     version: "4.1.1"
     searoot: "{data_root}/root"
-    pointer: "{searoot}/seafile-server-latest"
+    pointer: "{app_download_root}/seafile-server-latest"
     app_root: "{pointer}/seahub"
     app_download_dir: "{app_root}"
     app_url_type: file
@@ -28,8 +28,6 @@ makina-projects.projectname:
     app_archive_test_exists: "test ! -e {cur_ver_dir}/setup-seafile.sh"
     app_url: "https://bitbucket.org/haiwen/seafile/downloads/seafile-server_{version}_{arch}.tar.gz"
     arch: "x86-64"
-    seafile_data: "{searoot}/seafile-data"
-    seahub_data: "{searoot}/seahub-data"
     seafile_mysql_host: 127.0.0.1
     seafile_mysql_port: 3306
     seafile_mysql_db: seafile
@@ -43,9 +41,12 @@ makina-projects.projectname:
     ccnet_conf:
       General:
         SERVICE_URL: "https://{domain}:443"
-        name: "{fqdn}"
+        NAME: "seafile"
+        USER_NAME: "seafile"
       Network:
-        port: 10002
+        PORT: 10002
+      Client:
+        PORT: 13419
       Database:
         ENGINE: 'mysql'
         HOST: "{ccnet_mysql_host}"
@@ -59,6 +60,8 @@ makina-projects.projectname:
         port: 12001
       fileserver:
         port: 8082
+
+
     seafile_ini:
       database:
         type: mysql
@@ -97,15 +100,21 @@ makina-projects.projectname:
         mode: 640
       {% endfor %}
       seahub/seahub_dsm.py:
-        target: "{pointer}/seahub/seahub_dsm.py"
+        target: "{cur_ver_dir}/seahub/seahub_dsm.py"
       ccnet/seafile.ini:
-        target: "{pointer}/ccnet/seafile.ini"
+        target: "{app_download_root}/ccnet/seafile.ini"
+      logrotate.conf:
+        target: "/etc/logrotate.d/seafile-{name}"
       ccnet/ccnet.conf:
-        target: "{pointer}/ccnet/ccnet.conf"
+        target: "{app_download_root}/ccnet/ccnet.conf"
       conf/seafdav.conf:
-        target: "{pointer}/conf/seafdav.conf"
+        target: "{app_download_root}/conf/seafdav.conf"
+      "seafile-status-wrapper.sh":
+        target: "{cur_ver_dir}/seafile-status-wrapper.sh"
+      "seafile-status.sh":
+        target: "{cur_ver_dir}/seafile-status.sh"
       seafile.conf:
-        target: "{seafile_data}/seafile.conf"
+        target: "{data_root}/seafile-data/seafile.conf"
     htaccess: "/etc/{name}.webaccess"
     py: "{py_root}/bin/python"
     py_root: "{project_root}/venv"
@@ -226,6 +235,25 @@ makina-projects.projectname:
        - "('fr', _('French'))"
        - "('en', _('English'))"
        - "('it', _('Italia'))"
+      # Absolute filesystem path to the directory that will hold thumbnail files.
+      THUMBNAIL_ROOT: '{data_root}/seafile-data/thumbnail/thumb/'
+      THUMBNAIL_EXTENSION: 'png'
+      THUMBNAIL_DEFAULT_SIZE: '24'
+      PREVIEW_DEFAULT_SIZE: '100'
+      # Enable cloude mode and hide `Organization` tab.
+      CLOUD_MODE: True
+      # Enalbe or disalbe registration on web. Default is `False`.
+      ENABLE_SIGNUP: False
+      # Activate or deactivate user when registration complete. Default is `True`.
+      # If set to `False`, new users need to be activated by admin in admin panel.
+      ACTIVATE_AFTER_REGISTRATION: False
+      # Whether to send email when a system admin adding a new member. Default is `True`.
+      # NOTE: since version 1.4.
+      SEND_EMAIL_ON_ADDING_SYSTEM_MEMBER: True
+      # Attempt limit before showing a captcha when login.
+      LOGIN_ATTEMPT_LIMIT: 3
+      # Whether a user's session cookie expires when the Web browser is closed.
+      SESSION_EXPIRE_AT_BROWSER_CLOSE: False
       #ADDITIONAL_TEMPLATE_DIRS:
       #  - '{project_root}/calanques'
       # add custom extra_settings which will be processed at end only

@@ -113,11 +113,10 @@ prepreqs-{{cfg.name}}:
       - pkg: prepreqs-{{cfg.name}}
       - user: {{cfg.name}}-www-data
     - names:
+      - {{cfg.data_root}}/pids
+      - {{cfg.data_root}}/logs
       - {{cfg.data_root}}/cache
       - {{cfg.data.static}}
-      - {{cfg.data.seafile_data}}
-      - {{cfg.data.seahub_data}}
-      - {{cfg.data.searoot}}
 
 {% for i in ['cache'] %}
 {{cfg.name}}-l-dirs-{{i}}:

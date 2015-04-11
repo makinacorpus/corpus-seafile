@@ -13,8 +13,8 @@ import os
     '{{data.cur_ver_dir}}/seafile/lib64/python2.6/site-packages',
     '{{data.cur_ver_dir}}/seafile/lib64/python2.7/site-packages'
 ]]
-os.environ['CCNET_CONF_DIR'] = "{{data.pointer}}/ccnet"
-os.environ['SEAFILE_CONF_DIR'] = "{{data.seafile_data}}"
+os.environ['CCNET_CONF_DIR'] = "{{data.searoot}}/ccnet"
+os.environ['SEAFILE_CONF_DIR'] = "{{data.searoot}}/seafile-data"
 os.environ['LD_LIBRARY_PATH'] = ":".join(
     [
         "{{data.cur_ver_dir}}/seafile/lib64",
