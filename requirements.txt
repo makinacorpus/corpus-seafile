@@ -12,14 +12,13 @@ itsdangerous == 0.24
 nose == 1.3.3
 SQLAlchemy == 0.9.4
 Pillow
-djangorestframework
-django-cors-headers
 pycurl
 requests
 ipython
 gunicorn
-django-extensions
-django-finalware
+# django-extensions
+# django-cors-headers
+# django-finalware
 
 
 

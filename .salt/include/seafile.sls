@@ -134,6 +134,7 @@ include:
     - target: "{{cfg.data_root}}/seahub-data/avatars"
     - watch:
       - cmd: {{cfg.name}}-pre3
+      - file: {{cfg.name}}-pre3
     - watch_in:
       - mc_proxy: {{cfg.name}}-configs-pre
 

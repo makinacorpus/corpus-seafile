@@ -14,7 +14,7 @@
 
 makina-projects.projectname:
   data:
-    version: "4.1.1"
+    version: "4.1.2"
     searoot: "{data_root}/root"
     pointer: "{app_download_root}/seafile-server-latest"
     app_root: "{pointer}/seahub"
@@ -22,7 +22,7 @@ makina-projects.projectname:
     app_url_type: file
     app_url_tar_opts: "xzvf"
     app_url_archive_format: tar
-    app_url_hash: "md5=de64f5f52ae4183d912d1584eac8a9b3"
+    app_url_hash: "md5=d19cb14808b41274a1e22938748e4829"
     app_download_root: "{data_root}/server_{version}"
     cur_ver_dir: "{app_download_root}/seafile-server-{version}"
     app_archive_test_exists: "test ! -e {cur_ver_dir}/setup-seafile.sh"
