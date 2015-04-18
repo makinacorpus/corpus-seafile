@@ -3,7 +3,7 @@
     - env:
       - DJANGO_SETTINGS_MODULE: "{{data.DJANGO_SETTINGS_MODULE}}"
 {% endmacro %}
- 
+
 {% set data = cfg.data %}
 {% for admins in data.get('admins', []) %}
 {% for admin, adata in admins.items() %}
