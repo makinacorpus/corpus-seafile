@@ -119,6 +119,9 @@ include:
               test ! -e "{{cfg.data_root}}/seahub-data/avatars"
   file.absent:
     - name: "{{data.cur_ver_dir}}/seahub/media/avatars"
+    - onlyif: |
+              set -e
+              test ! -h "{{data.cur_ver_dir}}/seahub/media/avatars"
     - watch:
       - mc_proxy: {{cfg.name}}-configs-before
       - cmd: {{cfg.name}}-pre3

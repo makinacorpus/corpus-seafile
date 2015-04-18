@@ -39,6 +39,12 @@ makina-projects.projectname:
     ccnet_mysql_user: ccnet
     ccnet_mysql_pw: ccnet
     ccnet_conf:
+      #LDAP:
+      #  HOST: ldap://ldap.example.com
+      #  BASE: ou=users,dc=example,dc=com
+      #  USER_DN: cn=seafileadmin,dc=example,dc=com
+      #  PASSWORD: secret
+      #  LOGIN_ATTR: mail
       General:
         SERVICE_URL: "https://{domain}:443"
         NAME: "seafile"
@@ -99,10 +105,21 @@ makina-projects.projectname:
         target: "{pointer}/seahub/seahub_settings.py"
         mode: 640
       {% endfor %}
+      {% for i in ['settings_local_2.py'] %}
+      "{{i}}":
+        source: "salt://makina-projects/{name}/files/config.py"
+        #target: "{app_root}/{PROJECT}/{{i}}"
+        target: "{pointer}/seahub/seahub_settings_2.py"
+        mode: 640
+      {% endfor %} 
+      seahub/seahub_wsgi.py:
+        target: "{cur_ver_dir}/seahub/seahub_wsgi.py"
       seahub/seahub_dsm.py:
         target: "{cur_ver_dir}/seahub/seahub_dsm.py"
       ccnet/seafile.ini:
         target: "{app_download_root}/ccnet/seafile.ini"
+      logo.png:
+        target: "{cur_ver_dir}/seahub/media/custom/logo.png"
       logrotate.conf:
         target: "/etc/logrotate.d/seafile-{name}"
       ccnet/ccnet.conf:
@@ -128,7 +145,7 @@ makina-projects.projectname:
     #admin_url: /admin
     #admin_allowed_ips :[]
     DJANGO_SETTINGS_MODULE: "seahub_dsm"
-    WSGI: "{PROJECT}.wsgi:application"
+    WSGI: "seahub_wsgi:application"
     nginx_loglevel: "crit"
     nginx_upstreams: salt://makina-projects/{name}/files/nginx.upstreams.conf
     nginx_vhost: salt://makina-projects/{name}/files/nginx.content.conf
@@ -137,18 +154,17 @@ makina-projects.projectname:
     #ftp_port_range: "22300 22400"
     #ftp_users:
     #  - ftpuser: {'password': 'xxx', "home": "{data_root}/foo"}
-    create_admins: true 
     admins:
       {% for i in ['sysadmin'] %}
       - {{i}}:
           mail: "{{i}}+{name}@{fqdn}"
           password: {{salt['mc_utils.generate_stored_password'](
-                             'corpus-django_web_admin'+i)}}
+                             'corpus-django_web_admine'+i)}}
       {%endfor %}
     static: "{data_root}/static"
     media: "{app_root}/seahub/media"
     host: localhost
-    port: 8180
+    port: 8000
     workers: 10
     worker_class: sync
     worker_timeout: 9000
@@ -157,6 +173,8 @@ makina-projects.projectname:
     do_syncdb: true
     do_migrate: false
     do_syncdb_only_first_time: true
+    create_admins: false
+    reset_admins_passwords: false
     # http_users:
     #   - root: foo
     # extra django settings to add
@@ -190,6 +208,9 @@ makina-projects.projectname:
         - "{domain}"
         - "{fqdn}"
         - "10.5.0.1"
+      LOGO_PATH: 'custom/logo.png'
+      LOGO_WIDTH: 213
+      LOGO_HEIGHT: 75
       CORS_ORIGIN_ALLOW_ALL: True
       # Internationalization
       # https://docs.djangoproject.com/en/1.6/topics/i18n/
@@ -243,7 +264,7 @@ makina-projects.projectname:
       # Enable cloude mode and hide `Organization` tab.
       CLOUD_MODE: True
       # Enalbe or disalbe registration on web. Default is `False`.
-      ENABLE_SIGNUP: False
+      ENABLE_SIGNUP: True
       # Activate or deactivate user when registration complete. Default is `True`.
       # If set to `False`, new users need to be activated by admin in admin panel.
       ACTIVATE_AFTER_REGISTRATION: False

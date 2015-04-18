@@ -1,4 +1,5 @@
 *pyc
+.directory
 /develop_eggs
 /corpus-django
 /cache

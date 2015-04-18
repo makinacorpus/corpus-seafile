@@ -23,34 +23,3 @@ include:
   'warmup_delay': "10",
   'max_age': 24*60*60} %}
 {{ circus.circusAddWatcher(cfg.name+'-django', **circus_data) }}
-
-{% set cenv = {
-  'DJANGO_SETTINGS_MODULE': cfg.data.DJANGO_SETTINGS_MODULE,
-  'LD_LIBRARY_PATH': ('{0}/seafile/lib/'
-                      ':{0}/seafile/lib64'
-                      ''.format(data.pointer)} %} 
-{% set circus_data = {
-  'cmd': '{4}/bin/gunicorn -k {5} -t {6} -w {2} -b {0}:{1} {3}'.format(
-      data.host, data.port, data.workers, data.WSGI, data.py_root, data.worker_class,
-      data.worker_timeout),
-  'environment': cenv,
-  'uid': cfg.user,
-  'gid': cfg.group,
-  'copy_env': True,
-  'working_dir': data.app_root,
-  'warmup_delay': "10",
-  'max_age': 24*60*60} %}
-{{ circus.circusAddWatcher(cfg.name+'-django', **circus_data) }}
-
-{% set circus_data = {
-  'cmd': '{4}/bin/gunicorn -k {5} -t {6} -w {2} -b {0}:{1} {3}'.format(
-      data.host, data.port, data.workers, data.WSGI, data.py_root, data.worker_class,
-      data.worker_timeout),
-  'environment': cenv,
-  'uid': cfg.user,
-  'gid': cfg.group,
-  'copy_env': True,
-  'working_dir': data.app_root,
-  'warmup_delay': "10",
-  'max_age': 24*60*60} %}
-{{ circus.circusAddWatcher(cfg.name+'-django', **circus_data) }}

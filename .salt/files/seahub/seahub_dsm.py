@@ -22,5 +22,5 @@ os.environ['LD_LIBRARY_PATH'] = ":".join(
     ] + os.environ.get('LD_LIBRARY_PATH', '').split(':'))
 from seahub_settings import *
 from {{data.SEAFILE_DJANGO_SETTINGS_MODULE}} import *
-from seahub_settings import *
+from seahub_settings_2 import *
 # vim:set et sts=4 ts=4 tw=80:

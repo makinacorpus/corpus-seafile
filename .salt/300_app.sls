@@ -117,6 +117,7 @@ user-{{cfg.name}}-{{admin}}:
       - cmd: syncdb-{{cfg.name}}
       - file: user-{{cfg.name}}-{{admin}}
 
+{% if data.get('reset_admins_passwords', False) %}
 {% set f = data.app_root + '/salt_' + admin + '_password.py' %}
 superuser-{{cfg.name}}-{{admin}}:
   file.managed:
@@ -150,6 +151,7 @@ superuser-{{cfg.name}}-{{admin}}:
     - watch:
       - cmd: user-{{cfg.name}}-{{admin}}
       - file: superuser-{{cfg.name}}-{{admin}}
+{% endif %}
 {%endfor %}
 {%endfor %}
 {%endif %}
