@@ -162,7 +162,7 @@ makina-projects.projectname:
                              'corpus-django_web_admine'+i)}}
       {%endfor %}
     static: "{data_root}/static"
-    media: "{app_root}/seahub/media"
+    media: "{app_root}/media"
     host: localhost
     port: 8000
     workers: 10
