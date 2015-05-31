@@ -210,7 +210,7 @@ makina-projects.projectname:
       MEDIA_ROOT: '{media}/'
       STATIC_ROOT: '{static}/'
       COMPRESS_ROOT: '{media}/'
-      LANGUAGE_CODE: fr-fr
+      LANGUAGE_CODE: fr
       DATE_FORMAT: 'iso-8601'
       ALLOWED_HOSTS:
         - localhost
