@@ -8,6 +8,7 @@ include:
 # inconditionnaly reboot circus & nginx upon deployments
 /bin/true:
   cmd.run:
+    - name: service memcached restart || /bin/true
     - watch_in:
       - mc_proxy: circus-pre-conf 
 

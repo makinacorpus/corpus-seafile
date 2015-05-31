@@ -14,7 +14,8 @@
 
 makina-projects.projectname:
   data:
-    version: "4.1.2"
+    MEDIA_URL: '/media/'
+    version: "4.2.2"
     searoot: "{data_root}/root"
     pointer: "{app_download_root}/seafile-server-latest"
     app_root: "{pointer}/seahub"
@@ -22,11 +23,13 @@ makina-projects.projectname:
     app_url_type: file
     app_url_tar_opts: "xzvf"
     app_url_archive_format: tar
-    app_url_hash: "md5=d19cb14808b41274a1e22938748e4829"
+    app_url_hash: "md5=ffd61e4cbee0c295376fda4697263345"
+    #app_url_hash: "md5=d19cb14808b41274a1e22938748e4829"
     app_download_root: "{data_root}/server_{version}"
     cur_ver_dir: "{app_download_root}/seafile-server-{version}"
     app_archive_test_exists: "test ! -e {cur_ver_dir}/setup-seafile.sh"
-    app_url: "https://bitbucket.org/haiwen/seafile/downloads/seafile-server_{version}_{arch}.tar.gz"
+    app_url: "https://bintray.com/artifact/download/seafile-org/seafile/seafile-server_{version}_{arch}.tar.gz"
+    #app_url: "https://bitbucket.org/haiwen/seafile/downloads/seafile-server_{version}_{arch}.tar.gz"
     arch: "x86-64"
     seafile_mysql_host: 127.0.0.1
     seafile_mysql_port: 3306
@@ -66,8 +69,14 @@ makina-projects.projectname:
         port: 12001
       fileserver:
         port: 8082
-
-
+      database:
+        type: mysql
+        host: "{seafile_mysql_host}"
+        port: "{seafile_mysql_port}"
+        user: "{seafile_mysql_user}"
+        password: "{seafile_mysql_pw}"
+        db_name: "{seafile_mysql_db}"
+        connection_charset: 'utf8'
     seafile_ini:
       database:
         type: mysql
@@ -161,8 +170,8 @@ makina-projects.projectname:
           password: {{salt['mc_utils.generate_stored_password'](
                              'corpus-django_web_admine'+i)}}
       {%endfor %}
-    static: "{data_root}/static"
     media: "{app_root}/media"
+    static: "{media}/assets"
     host: localhost
     port: 8000
     workers: 10
@@ -198,8 +207,9 @@ makina-projects.projectname:
             init_command: 'SET storage_engine=INNODB'
       DEFAULT_FROM_EMAIL: '{adminmail}'
       SERVER_EMAIL: 'root@{fqdn}'
-      MEDIA_ROOT: '{media}'
-      STATIC_ROOT: '{static}'
+      MEDIA_ROOT: '{media}/'
+      STATIC_ROOT: '{static}/'
+      COMPRESS_ROOT: '{media}/'
       LANGUAGE_CODE: fr-fr
       DATE_FORMAT: 'iso-8601'
       ALLOWED_HOSTS:
@@ -275,6 +285,11 @@ makina-projects.projectname:
       LOGIN_ATTEMPT_LIMIT: 3
       # Whether a user's session cookie expires when the Web browser is closed.
       SESSION_EXPIRE_AT_BROWSER_CLOSE: False
+      SERVE_STATIC: True
+      STATIC_URL: '{MEDIA_URL}assets/'
+      MEDIA_URL: '{MEDIA_URL}'
+      COMPRESS_URL: '{MEDIA_URL}'
+      COMPRESS_ENABLED: True
       #ADDITIONAL_TEMPLATE_DIRS:
       #  - '{project_root}/calanques'
       # add custom extra_settings which will be processed at end only

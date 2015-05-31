@@ -116,7 +116,7 @@ prepreqs-{{cfg.name}}:
       - {{cfg.data_root}}/pids
       - {{cfg.data_root}}/logs
       - {{cfg.data_root}}/cache
-      - {{cfg.data.static}}
+      #- {{cfg.data.static}}
 
 {% for i in ['cache'] %}
 {{cfg.name}}-l-dirs-{{i}}:
