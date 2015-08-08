@@ -39,6 +39,13 @@ Django==1.5.8
 django-compressor==1.4
 django-statici18n==1.1.2
 
+# for >= 5
+-e git+git://github.com/haiwen/django-constance.git@bde7f7cdfd0ed1631a6817fd4cd76f37bf54fe35#egg=django-constance[database]
+openpyxl==2.3.0 
+jdcal==1.2
+django_picklefield==0.3.2
+
+
 ##############
 # ADDITIONNAL
 ##############

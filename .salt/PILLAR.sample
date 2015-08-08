@@ -15,7 +15,11 @@
 makina-projects.projectname:
   data:
     MEDIA_URL: '/media/'
-    version: "4.2.2"
+    #version: "4.2.2"
+    #app_url_hash: "md5=ffd61e4cbee0c295376fda4697263345"
+    ver_major: "5"
+    version: "{ver_major}.0.4"
+    app_url_hash: "md5=82ffbfae04206274ff979df397cf262c"
     searoot: "{data_root}/root"
     pointer: "{app_download_root}/seafile-server-latest"
     app_root: "{pointer}/seahub"
@@ -23,7 +27,6 @@ makina-projects.projectname:
     app_url_type: file
     app_url_tar_opts: "xzvf"
     app_url_archive_format: tar
-    app_url_hash: "md5=ffd61e4cbee0c295376fda4697263345"
     #app_url_hash: "md5=d19cb14808b41274a1e22938748e4829"
     app_download_root: "{data_root}/server_{version}"
     cur_ver_dir: "{app_download_root}/seafile-server-{version}"
@@ -56,6 +59,7 @@ makina-projects.projectname:
         PORT: 10002
       Client:
         PORT: 13419
+        UNIX_SOCKET: "{app_download_root}/ccnet/ccnet.sock"
       Database:
         ENGINE: 'mysql'
         HOST: "{ccnet_mysql_host}"
@@ -105,42 +109,69 @@ makina-projects.projectname:
     # leave it out of seahub as seahub/__init__ is not
     # importable at first, there is magic
     configs:
-      {% for i in ['settings_local.py',
-                   'localsettings.py',
-                   'local_settings.py'] %}
-      "{{i}}":
-        source: "salt://makina-projects/{name}/files/config.py"
-        #target: "{app_root}/{PROJECT}/{{i}}"
+      "logo.png":
+        target: "{cur_ver_dir}/seahub/media/custom/logo.png"
+      "logrotate.conf":
+        target: "/etc/logrotate.d/seafile-{name}"
+      "seafile-wrapper.sh":
+        source: "salt://makina-projects/{name}/files/{ver_major}/seafile-wrapper.sh"
+        target: "{cur_ver_dir}/seafile-wrapper.sh"
+      "seafile.sh":
+        source: "salt://makina-projects/{name}/files/{ver_major}/seafile.sh"
+        target: "{cur_ver_dir}/seafile.sh"
+      {# django app #}
+      "seahub/seahub_wsgi.py":
+        source: "salt://makina-projects/{name}/files/{ver_major}/seahub/seahub_wsgi.py"
+        target: "{cur_ver_dir}/seahub/seahub_wsgi.py"
+      "seahub/seahub_dsm.py":
+        source: "salt://makina-projects/{name}/files/{ver_major}/seahub/seahub_dsm.py"
+        target: "{cur_ver_dir}/seahub/seahub_dsm.py"
+      {# daemons #}
+      "conf/seafdav.conf":
+        source: "salt://makina-projects/{name}/files/{ver_major}/conf/seafdav.conf"
+        target: "{app_download_root}/conf/seafdav.conf"
+      {# some files have different place depending on version #}
+      # after 5 location
+      "aseahub_settings.py":
+        source: "salt://makina-projects/{name}/files/{ver_major}/config.py"
+        target: "{app_download_root}/conf/seahub_settings.py"
+        mode: 640
+      "asettings_local2.py":
+        source: "salt://makina-projects/{name}/files/{ver_major}/config.py"
+        target: "{app_download_root}/conf/seahub_settings_2.py"
+        mode: 640
+      "a{seafile.conf":
+        source: "salt://makina-projects/{name}/files/{ver_major}/seafile.conf"
+        target: "{app_download_root}/conf/seafile.conf"
+      "accnet/ccnet.conf":
+        source: "salt://makina-projects/{name}/files/{ver_major}/ccnet/ccnet.conf"
+        target: "{app_download_root}/conf/ccnet.conf"
+      "aconf/seafile.ini":
+        source: "salt://makina-projects/{name}/files/{ver_major}/ccnet/seafile.ini"
+        target: "{app_download_root}/conf/seafile.ini"
+      # pre 5 location
+      "seahub_settings.py":
+        source: "salt://makina-projects/{name}/files/{ver_major}/config.py"
         target: "{pointer}/seahub/seahub_settings.py"
         mode: 640
-      {% endfor %}
-      {% for i in ['settings_local_2.py'] %}
-      "{{i}}":
-        source: "salt://makina-projects/{name}/files/config.py"
-        #target: "{app_root}/{PROJECT}/{{i}}"
+      "seahub_settings_2.py":
+        source: "salt://makina-projects/{name}/files/{ver_major}/config.py"
         target: "{pointer}/seahub/seahub_settings_2.py"
         mode: 640
-      {% endfor %} 
-      seahub/seahub_wsgi.py:
-        target: "{cur_ver_dir}/seahub/seahub_wsgi.py"
-      seahub/seahub_dsm.py:
-        target: "{cur_ver_dir}/seahub/seahub_dsm.py"
-      ccnet/seafile.ini:
-        target: "{app_download_root}/ccnet/seafile.ini"
-      logo.png:
-        target: "{cur_ver_dir}/seahub/media/custom/logo.png"
-      logrotate.conf:
-        target: "/etc/logrotate.d/seafile-{name}"
-      ccnet/ccnet.conf:
-        target: "{app_download_root}/ccnet/ccnet.conf"
-      conf/seafdav.conf:
-        target: "{app_download_root}/conf/seafdav.conf"
-      "seafile-status-wrapper.sh":
-        target: "{cur_ver_dir}/seafile-status-wrapper.sh"
-      "seafile-status.sh":
-        target: "{cur_ver_dir}/seafile-status.sh"
-      seafile.conf:
+      "seafile.conf":
+        source: "salt://makina-projects/{name}/files/{ver_major}/seafile.conf"
         target: "{data_root}/seafile-data/seafile.conf"
+      "ccnet/ccnet.conf":
+        source: "salt://makina-projects/{name}/files/{ver_major}/ccnet/ccnet.conf"
+        target: "{app_download_root}/ccnet/ccnet.conf"
+      "ccnet/seafile.ini":
+        source: "salt://makina-projects/{name}/files/{ver_major}/ccnet/seafile.ini"
+        target: "{app_download_root}/ccnet/seafile.ini"
+    pre_5_configs:
+      - "{cur_ver_dir}/seahub_settings.py"
+      - "{app_download_root}/seahub_settings.py"
+      - "{app_download_root}/ccnet/ccnet.conf"
+      - "{data_root}/seafile-data/seafile.conf"
     htaccess: "/etc/{name}.webaccess"
     py: "{py_root}/bin/python"
     py_root: "{project_root}/venv"
@@ -188,6 +219,7 @@ makina-projects.projectname:
     #   - root: foo
     # extra django settings to add
     # to the file
+    fixperms_cron_periodicity: "0 */2 * * *"
     django_settings:
       # order is important
       FILE_SERVER_ROOT: "https://{domain}/seafhttp"

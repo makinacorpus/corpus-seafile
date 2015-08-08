@@ -18,7 +18,7 @@ SCRIPT=$(readlink -f "$0")
 INSTALLPATH=$(dirname "${SCRIPT}")
 TOPDIR=$(dirname "${INSTALLPATH}")
 default_ccnet_conf_dir=${TOPDIR}/ccnet
-ccnet_pidfile=${INSTALLPATH}/runtime/ccnet.pid
+central_config_dir=${TOPDIR}/conf
 seaf_controller="${INSTALLPATH}/seafile/bin/seafile-controller"
 
 
@@ -48,6 +48,15 @@ function validate_ccnet_conf_dir () {
     fi
 }
 
+function validate_central_conf_dir () {
+    if [[ ! -d ${central_config_dir} ]]; then
+        echo "Error: there is no conf/ directory."
+        echo "Have you run setup-seafile.sh before this?"
+        echo ""
+        exit -1;
+    fi
+}
+
 function read_seafile_data_dir () {
     seafile_ini=${default_ccnet_conf_dir}/seafile.ini
     if [[ ! -f ${seafile_ini} ]]; then
@@ -64,7 +73,10 @@ function read_seafile_data_dir () {
 }
 
 function test_config() {
-    if ! LD_LIBRARY_PATH=$SEAFILE_LD_LIBRARY_PATH ${seaf_controller} --test -c "${default_ccnet_conf_dir}" -d "${seafile_data_dir}"; then
+    if ! LD_LIBRARY_PATH=$SEAFILE_LD_LIBRARY_PATH ${seaf_controller} --test \
+         -c "${default_ccnet_conf_dir}" \
+         -d "${seafile_data_dir}" \
+         -F "${central_config_dir}" ; then
         exit 1;
     fi
 }
@@ -105,13 +117,18 @@ function validate_already_running () {
 
 function start_seafile_server () {
     validate_already_running;
+    validate_central_conf_dir;
     validate_ccnet_conf_dir;
     read_seafile_data_dir;
     test_config;
 
     echo "Starting seafile server, please wait ..."
 
-    LD_LIBRARY_PATH=$SEAFILE_LD_LIBRARY_PATH ${seaf_controller} -c "${default_ccnet_conf_dir}" -d "${seafile_data_dir}"
+    mkdir -p $TOPDIR/logs
+    LD_LIBRARY_PATH=$SEAFILE_LD_LIBRARY_PATH ${seaf_controller} \
+                   -c "${default_ccnet_conf_dir}" \
+                   -d "${seafile_data_dir}" \
+                   -F "${central_config_dir}"
 
     sleep 3
 
@@ -160,4 +177,6 @@ case $1 in
     "restart" )
         restart_seafile_server;
 esac
+
+#echo "Done."
 # vim:set et sts=4 ts=4 tw=80:

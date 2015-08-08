@@ -15,16 +15,18 @@ include:
       - mc_proxy: {{cfg.name}}-configs-pre
 
 # for python module resoluton (abspath vs symlink)
+{% if data.version < "5" %}
 {{cfg.name}}-pre4:
   file.symlink:
+    - target: "{{data.cur_ver_dir}}/seahub/seahub_settings.py"
     - names:
       - "{{data.cur_ver_dir}}/seahub_settings.py"
       - "{{data.app_download_root}}/seahub_settings.py"
-    - target: "{{data.cur_ver_dir}}/seahub/seahub_settings.py"
     - watch:
       - mc_proxy: {{cfg.name}}-configs-before
     - watch_in:
       - mc_proxy: {{cfg.name}}-configs-pre
+{% endif %}
 
 {{cfg.name}}-thirdpart:
   cmd.run:
@@ -192,17 +194,9 @@ include:
   # modified version that support status
   file.symlink:
     - name: /etc/init.d/seafile-daemons
-    - target: {{data.searoot}}/seafile-server-latest/seafile-status-wrapper.sh
+    - target: {{data.searoot}}/seafile-server-latest/seafile-wrapper.sh
     - watch:
       - mc_proxy: {{cfg.name}}-configs-before
     - watch_in:
       - mc_proxy: {{cfg.name}}-configs-pre
 
-{{cfg.name}}-service-launch:
-  service.running:
-    - name: seafile-daemons
-    - enable: True
-    - watch:
-      - mc_proxy: {{cfg.name}}-configs-post
-    - watch_in:
-      - mc_proxy: {{cfg.name}}-configs-after

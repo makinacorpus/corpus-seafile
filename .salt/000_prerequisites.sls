@@ -81,7 +81,11 @@ prepreqs-{{cfg.name}}:
       - libxml2-dev
       - libxslt1-dev
       - libopenjpeg-dev
+      {% if grains['oscodename'] in ['trusty'] %}
       - libopenjpeg2
+      {% else %}
+      - libopenjpeg5
+      {% endif %}
       - m4
       - man-db
       - pkg-config

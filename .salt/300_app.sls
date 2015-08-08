@@ -11,11 +11,12 @@
 include:
   - makina-projects.{{cfg.name}}.include.configs
   - makina-projects.{{cfg.name}}.include.seafile
+  - makina-projects.{{cfg.name}}.include.service
 
 # backward compatible ID !
 {{cfg.name}}-config:
   file.exists:
-    - name: "{{data.configs['localsettings.py']['target']}}"
+    - name: "{{data.configs['seahub_settings.py']['target']}}"
     - watch:
       - mc_proxy: "{{cfg.name}}-configs-post"
 
