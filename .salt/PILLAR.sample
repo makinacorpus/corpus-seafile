@@ -237,6 +237,7 @@ makina-projects.projectname:
           PASSWORD: '{name}secret'
           OPTIONS:
             init_command: 'SET storage_engine=INNODB'
+      EMAIL_HOST: "localhost"
       DEFAULT_FROM_EMAIL: '{adminmail}'
       SERVER_EMAIL: 'root@{fqdn}'
       MEDIA_ROOT: '{media}/'
@@ -313,6 +314,7 @@ makina-projects.projectname:
       # Whether to send email when a system admin adding a new member. Default is `True`.
       # NOTE: since version 1.4.
       SEND_EMAIL_ON_ADDING_SYSTEM_MEMBER: True
+      SEND_EMAIL_ON_RESETTING_USER_PASSWD: True
       # Attempt limit before showing a captcha when login.
       LOGIN_ATTEMPT_LIMIT: 3
       # Whether a user's session cookie expires when the Web browser is closed.
