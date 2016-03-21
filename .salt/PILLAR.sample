@@ -238,7 +238,7 @@ makina-projects.projectname:
           OPTIONS:
             init_command: 'SET storage_engine=INNODB'
       EMAIL_HOST: "localhost"
-      DEFAULT_FROM_EMAIL: '{adminmail}'
+      DEFAULT_FROM_EMAIL: 'Seafile <{adminmail}>'
       SERVER_EMAIL: 'root@{fqdn}'
       MEDIA_ROOT: '{media}/'
       STATIC_ROOT: '{static}/'
