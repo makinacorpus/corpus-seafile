@@ -13,9 +13,9 @@
             # hack to be sure that nginx is in www-data
             # in most cases
             datagroup="{{cfg.group}}"
-            groupadd -r $datagroup || /bin/true
-            gpasswd -a nginx $datagroup || /bin/true
-            gpasswd -a www-data $datagroup || /bin/true
+            groupadd -r $datagroup >/dev/null 2>&1 || /bin/true
+            gpasswd -a nginx $datagroup >/dev/null 2>&1 || /bin/true
+            gpasswd -a www-data $datagroup >/dev/null 2>& 1|| /bin/true
             # be sure to remove POSIX acls support
             setfacl -P -R -b -k "{{cfg.project_dir}}"
             "{{locs.resetperms}}" -q --no-acls\
