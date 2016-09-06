@@ -92,10 +92,10 @@ makina-projects.projectname:
         connection_charset: 'utf8'
     seafdav_conf:
       WEBDAV:
-        enabled: "false"
+        enabled: "true"
         port: 8080
-        fastcgi: "false"
-        share_name: /
+        fastcgi: "true"
+        share_name: /seafdav
     # we use later another django site module
     # which must live out of ./seahub as it import
     # modules that needs to be first added
