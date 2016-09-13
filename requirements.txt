@@ -19,13 +19,13 @@ gunicorn
 # django-extensions
 # django-cors-headers
 # django-finalware
+pytz==2015.7
 
 
 
 ###################################################
 # MERGE WITH DATA_DIR/root/seahub/requirements.txt
 ###################################################
-
 lockfile
 pyes
 ordereddict
@@ -34,17 +34,21 @@ flup
 python_daemon==1.5.5
 chardet
 six
-Django==1.5.8
+Django==1.8.10
 #Djblets==0.6.14
 django-compressor==1.4
 django-statici18n==1.1.2
+django-post-office==2.0.3
 
+djangorestframework==3.3.1
 # for >= 5
--e git+git://github.com/haiwen/django-constance.git@bde7f7cdfd0ed1631a6817fd4cd76f37bf54fe35#egg=django-constance[database]
+-e git+git://github.com/haiwen/django-constance.git@751f7f8b60651a2828e4a535a47fc05b907883da#egg=django-constance[database]
 openpyxl==2.3.0 
 jdcal==1.2
 django_picklefield==0.3.2
 
+django-formtools
+qrcode 
 
 ##############
 # ADDITIONNAL
@@ -53,5 +57,6 @@ django_picklefield==0.3.2
 MySQL-python==1.2.5
 python-memcached
 python-ldap
+urllib3
 
 -e git+https://github.com/makinacorpus/djblets.git@release-0.6.x#egg=Djblets

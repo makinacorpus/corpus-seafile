@@ -17,9 +17,9 @@ makina-projects.projectname:
     MEDIA_URL: '/media/'
     #version: "4.2.2"
     #app_url_hash: "md5=ffd61e4cbee0c295376fda4697263345"
-    ver_major: "5"
-    version: "{ver_major}.0.4"
-    app_url_hash: "md5=82ffbfae04206274ff979df397cf262c"
+    ver_major: "6"
+    version: "{ver_major}.0.3"
+    app_url_hash: "md5=21b2f10b3ad41f4e5f5c5bfd43d64d17"
     searoot: "{data_root}/root"
     pointer: "{app_download_root}/seafile-server-latest"
     app_root: "{pointer}/seahub"
