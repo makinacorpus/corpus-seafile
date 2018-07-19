@@ -12,14 +12,17 @@
 # you can also merge parts of this file
 # with the relevant pillar
 
+
 makina-projects.projectname:
   data:
     MEDIA_URL: '/media/'
-    #version: "4.2.2"
-    #app_url_hash: "md5=ffd61e4cbee0c295376fda4697263345"
+    # version: "4.2.2"
+    # app_url_hash: "md5=ffd61e4cbee0c295376fda4697263345"
+    # version: "6.0.3"
+    # app_url_hash: "md5=21b2f10b3ad41f4e5f5c5bfd43d64d17"
+    version: "{ver_major}.3.2"
+    app_url_hash: "md5=7a81e559d77d7fa306b0dab35c9f5869"
     ver_major: "6"
-    version: "{ver_major}.0.3"
-    app_url_hash: "md5=21b2f10b3ad41f4e5f5c5bfd43d64d17"
     searoot: "{data_root}/root"
     pointer: "{app_download_root}/seafile-server-latest"
     app_root: "{pointer}/seahub"
@@ -31,7 +34,8 @@ makina-projects.projectname:
     app_download_root: "{data_root}/server_{version}"
     cur_ver_dir: "{app_download_root}/seafile-server-{version}"
     app_archive_test_exists: "test ! -e {cur_ver_dir}/setup-seafile.sh"
-    app_url: "https://bintray.com/artifact/download/seafile-org/seafile/seafile-server_{version}_{arch}.tar.gz"
+    app_url: "http://download.seadrive.org/seafile-server_{version}_{arch}.tar.gz"
+    #app_url: "https://bintray.com/artifact/download/seafile-org/seafile/seafile-server_{version}_{arch}.tar.gz"
     #app_url: "https://bitbucket.org/haiwen/seafile/downloads/seafile-server_{version}_{arch}.tar.gz"
     arch: "x86-64"
     seafile_mysql_host: 127.0.0.1
@@ -177,7 +181,7 @@ makina-projects.projectname:
     py_root: "{project_root}/venv"
     media_source: "{media}"
     domain: "{fqdn}"
-    requirements: "{project_root}/requirements.txt"
+    requirements: "{project_root}/requirements.{version}.txt"
     server_aliases: []
     force_ssl: true
     #disabled_urls []
