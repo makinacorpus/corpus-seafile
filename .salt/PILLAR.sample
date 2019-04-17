@@ -19,9 +19,11 @@ makina-projects.projectname:
     # version: "4.2.2"
     # app_url_hash: "md5=ffd61e4cbee0c295376fda4697263345"
     # version: "6.0.3"
-    # app_url_hash: "md5=21b2f10b3ad41f4e5f5c5bfd43d64d17"
-    version: "{ver_major}.3.2"
-    app_url_hash: "md5=7a81e559d77d7fa306b0dab35c9f5869"
+    # app_url_hash: "md5=21b2f10b3ad41f4e5f5c5bfd43d64d17" 
+    # version: "{ver_major}.3.2"
+    # app_url_hash: "md5=7a81e559d77d7fa306b0dab35c9f5869"
+    version: "{ver_major}.3.4"
+    app_url_hash: "md5=29b703d787ed3b8135c5d40c22493d18"
     ver_major: "6"
     searoot: "{data_root}/root"
     pointer: "{app_download_root}/seafile-server-latest"
@@ -119,7 +121,13 @@ makina-projects.projectname:
         target: "/etc/logrotate.d/seafile-{name}"
       "seafile-wrapper.sh":
         source: "salt://makina-projects/{name}/files/{ver_major}/seafile-wrapper.sh"
-        target: "{cur_ver_dir}/seafile-wrapper.sh"
+        target: "{cur_ver_dir}/seafile-wrapper.sh" 
+      "fastcgi_params_common":
+        source: "salt://makina-projects/{name}/files/fastcgi_params_common"
+        target: "/etc/nginx/fastcgi_params_common"
+        mode: 644
+        user: root
+        group: root
       "seafile.sh":
         source: "salt://makina-projects/{name}/files/{ver_major}/seafile.sh"
         target: "{cur_ver_dir}/seafile.sh"

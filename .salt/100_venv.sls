@@ -11,7 +11,7 @@
   cmd.run:
     - name: |
             . {{data.py_root}}/bin/activate;
-            pip install -r "{{data.requirements}}" --download-cache "{{cfg.data_root}}/cache"
+            pip install -r "{{data.requirements}}"
     - env:
        - CFLAGS: "-I/usr/include/gdal"
     - cwd: {{data.app_root}}
