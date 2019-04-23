@@ -79,6 +79,8 @@ makina-projects.projectname:
         port: 12001
       fileserver:
         port: 8082
+        history:
+          keep_days: "{history_days}"
       database:
         type: mysql
         host: "{seafile_mysql_host}"
@@ -189,6 +191,7 @@ makina-projects.projectname:
     py_root: "{project_root}/venv"
     media_source: "{media}"
     domain: "{fqdn}"
+    history_days: 183
     requirements: "{project_root}/requirements.{version}.txt"
     server_aliases: []
     force_ssl: true
